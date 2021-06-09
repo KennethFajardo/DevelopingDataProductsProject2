@@ -1,0 +1,48 @@
+---
+title: "COVID Transmission and Death Rates in the Philippines"
+author: "Kenneth Fajardo"
+date: "6/9/2021"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Overview
+This presentation demonstrates the use of the Plot.ly package in R. The data that we will be using here is the COVID data made available by [Our World In Data]("https://raw.githubusercontent.com/owid/covid-19-data/master/
+public/data/owid-covid-data.csv"), focusing on COVID activity in the Philippines, as of 2021-06-08.
+
+## Initialization
+Load the needed libraries
+```{r lib, message=FALSE}
+library(plotly) # for generating interactive maps
+library(dplyr) # for transforming data
+library(tidyr) # for melting data
+library(lubridate) # for coercing dates
+```
+
+Download the data.
+```{r dl, eval=FALSE}
+download.file("https://raw.githubusercontent.com/owid/covid-19-data/
+              master/public/data/owid-covid-data.csv", "covid.csv")
+```
+
+Read the data.
+```{r read}
+covid <- read.csv("covid.csv")
+```
+
+***
+Select columns describing new cases and new deaths in the Philippines. Transform date from factor to Date class.
+```{r total, message=FALSE}
+covid <- covid[,grep("new_cases$|new_deaths$|iso|date", names(covid))]
+covid <- covid %>% filter(iso_code=="PHL") %>%
+            mutate(date = ymd(date)) %>% select(-c(iso_code))
+```
+
+## Generate plot
+**COVID Transmission and Death Rates in the Philippines as of 2021-06-09**
+```{r geodata, echo=FALSE, message=FALSE, comment="", warning=FALSE}
+plotx <- covid %>% gather("var", "value", -date) 
+plot_ly(plotx, x=~date, y=~value, color=~var, type="scatter", mode="lines")
