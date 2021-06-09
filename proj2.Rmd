@@ -36,13 +36,14 @@ covid <- read.csv("covid.csv")
 ***
 Select columns describing new cases and new deaths in the Philippines. Transform date from factor to Date class.
 ```{r total, message=FALSE}
-covid <- covid[,grep("new_cases$|new_deaths$|iso|date", names(covid))]
+covid <- covid[,grep("new_cases$|new_deaths$|iso|date", 
+                     names(covid))]
 covid <- covid %>% filter(iso_code=="PHL") %>%
             mutate(date = ymd(date)) %>% select(-c(iso_code))
 ```
 
 ## Generate plot
-**COVID Transmission and Death Rates in the Philippines as of 2021-06-09**
+**COVID Transmission and Death Rates in the Philippines as of 2021-06-08**
 ```{r geodata, echo=FALSE, message=FALSE, comment="", warning=FALSE}
 plotx <- covid %>% gather("var", "value", -date) 
 plot_ly(plotx, x=~date, y=~value, color=~var, type="scatter", mode="lines")
